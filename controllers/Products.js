@@ -41,7 +41,7 @@ export const newProduct = async (req, res) => {
 export const getproducts = async (req, res) => {
   try {
     const resultsPerPage = 12;
-    const apiFeature = new ApiFeatures(Product.find(), req.query)
+    const apiFeature = new apiFeature(Product.find(), req.query)
       .search()
       .filter()
       .paginate(resultsPerPage); // ✅ now works
