@@ -1,6 +1,7 @@
 
 import productModel from '../model/Product.js';
-import ApiFeatures from "../utils/ApiFeatures.js"; 
+import ApiFeatures from "../utils/apiFeatures.js";
+
 import Product from '../model/Product.js';
 
 
