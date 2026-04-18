@@ -37,20 +37,34 @@ export const newProduct = async (req, res) => {
   };
   
 
+export const getproducts = async (req, res, next) => {
+  try {
+    const resultperpage = 10;
 
-export const getproducts=async(req,res,next)=>{
-    const resultperpage=100
- const apiFeatures = new apiFeature(productModel.find(),req.query).search().filter().paginate(resultperpage)
-    const product= await apiFeatures.query
-res.status(200).json({
-    success :true,
-    message:"success get all products",
-   count:product.length,
-   product
-})
-}
+    // Build query
+    const apiFeatures = new apiFeature(productModel.find(), req.query)
+      .search()
+      .filter()
+      .paginate(resultperpage);
 
+    const products = await apiFeatures.query;
 
+    res.status(200).json({
+      success: true,
+      message: "Products fetched successfully",
+      count: products.length,
+      products,
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
 export const singleproduct = async (req, res, next) => {
     try {
         const product = await productModel.findById(req.params.id);
