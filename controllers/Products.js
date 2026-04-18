@@ -1,8 +1,9 @@
 
 import productModel from '../model/Product.js';
-import apiFeature from '../utils/apiFeatures.js';
-
+import ApiFeatures from "../utils/ApiFeatures.js"; 
 import Product from '../model/Product.js';
+
+
 export const newProduct = async (req, res) => {
   try {
     const { name, price, color, cutprice, describe, stock, category, seller, rating, size } = req.body;
@@ -41,10 +42,10 @@ export const newProduct = async (req, res) => {
 export const getproducts = async (req, res) => {
   try {
     const resultsPerPage = 12;
-    const apiFeature = new apiFeature(Product.find(), req.query)
+    const apiFeature = new ApiFeatures(Product.find(), req.query) // ✅ ApiFeatures, not apiFeature
       .search()
       .filter()
-      .paginate(resultsPerPage); // ✅ now works
+      .paginate(resultsPerPage);
 
     const product = await apiFeature.query;
 
