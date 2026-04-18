@@ -1,42 +1,37 @@
-class apiFeature {
-  constructor(query, strquery) {
+class ApiFeatures {
+  constructor(query, queryStr) {
     this.query = query;
-    this.strquery = strquery;
+    this.queryStr = queryStr;
   }
 
   search() {
-    const keyword = this.strquery.keyword
-      ? {
-        name: {
-          $regex: this.strquery.keyword,
-          $options: "i",
-        },
-      }
+    const keyword = this.queryStr.keyword
+      ? { name: { $regex: this.queryStr.keyword, $options: "i" } }
       : {};
-
     this.query = this.query.find({ ...keyword });
     return this;
   }
+
   filter() {
-    const querystrcopy = { ...this.strquery };
+    const queryCopy = { ...this.queryStr };
+    const removeFields = ["keyword", "page", "limit"];
+    removeFields.forEach((key) => delete queryCopy[key]);
 
-    const removefield = ["keyword", "limit", "page"];
-    removefield.forEach((field) => delete querystrcopy[field]);
+    // Handle price/rating range filters
+    let queryStr = JSON.stringify(queryCopy);
+    queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, (key) => `$${key}`);
 
-    // ✅ Fix category (case-insensitive)
-    if (querystrcopy.category) {
-      querystrcopy.category = {
-        $regex: `^${querystrcopy.category}$`,
-        $options: "i",
-      };
-    }
+    this.query = this.query.find(JSON.parse(queryStr));
+    return this;
+  }
 
-    let strquery = JSON.stringify(querystrcopy);
-    strquery = strquery.replace(/\b(gt|gte|lt|lte)\b/g, (match) => `$${match}`);
-
-    this.query = this.query.find(JSON.parse(strquery));
+  // ✅ This was missing — add this method
+  paginate(resultsPerPage) {
+    const currentPage = Number(this.queryStr.page) || 1;
+    const skip = resultsPerPage * (currentPage - 1);
+    this.query = this.query.limit(resultsPerPage).skip(skip);
     return this;
   }
 }
 
-export default apiFeature;
+export default ApiFeatures;
